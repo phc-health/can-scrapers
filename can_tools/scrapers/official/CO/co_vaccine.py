@@ -20,13 +20,14 @@ class ColoradoVaccineDemographics(CountyDashboard):
     # key taken from google network request
     key = "AIzaSyC1qbk75NzWBvSaDh6KnsjjA9pIrP4lYIE"
 
-    def fetch(self):
+    def fetch(self) -> requests.models.Response:
+        # download the contents of the drive folder
         url = "https://www.googleapis.com/drive/v3/files?q='{folder}'+in+parents&key={key}"
         header = {"Referer": "https://drive.google.com/"}
         r = requests.get(url.format(folder=self.folder, key=self.key), headers=header)
         return r
 
-    def normalize(self, data):
+    def normalize(self, data: requests.models.Response) -> pd.DataFrame:
         # get list of all files in the folder
         files = json.loads(data.content.decode("utf-8"))["files"]
 
