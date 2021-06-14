@@ -398,11 +398,7 @@ class WVCountyVaccineRace(WVCountyVaccine):
 
         # Build post headers
         headers = self.construct_headers(resource_key)
-        counties = list(
-            pd.read_csv(
-                os.path.dirname(__file__) + "/../../../bootstrap_data/locations.csv"
-            ).query("state == @self.state_fips and name != 'West Virginia'")["name"]
-        )
+        counties = self._retrieve_counties()
 
         # Build post body
         jsons = {}

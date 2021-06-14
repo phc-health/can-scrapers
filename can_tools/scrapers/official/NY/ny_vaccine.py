@@ -41,10 +41,7 @@ class NewYorkVaccineCountyAge(NewYorkVaccineCounty):
     }
 
     def fetch(self) -> List[pd.DataFrame]:
-        path = os.path.dirname(__file__) + "/../../../bootstrap_data/locations.csv"
-        counties = list(
-            pd.read_csv(path).query(f"state == 36 and location != 36")["name"]
-        )
+        counties = self._retrieve_counties()
 
         # set filters for each dose type for each county
         results = []

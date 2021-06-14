@@ -165,12 +165,7 @@ class SDVaccineCounty(MicrosoftBIDashboard):
         headers = self.construct_headers(resource_key)
 
         # get list of counties
-        counties = list(
-            pd.read_csv(
-                os.path.dirname(__file__) + "/../../../bootstrap_data/locations.csv"
-            ).query("state == @self.state_fips and name != 'South Dakota'")["name"]
-        )
-
+        counties = self._retrieve_counties()
         jsons = []
         """
         --The max # of counties that the service will return at one time is 13--

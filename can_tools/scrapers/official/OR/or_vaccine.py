@@ -36,10 +36,7 @@ class OregonVaccineCounty(TableauDashboard):
     filterFunctionName = "[federated.0t5ugmz0hnw7q719jeh0615iizas].[none:county:nk]"
 
     def fetch(self):
-        path = os.path.dirname(__file__) + "/../../../bootstrap_data/locations.csv"
-        counties = list(
-            pd.read_csv(path).query(f"state == 41 and location != 41")["name"]
-        )
+        counties = self._retrieve_counties()
 
         results = {}
         for county in counties:

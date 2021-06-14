@@ -132,21 +132,14 @@ class WisconsinVaccineCountyRace(WisconsinVaccineCounty):
         ts = TS()
         ts.loads(self.fullUrl)
 
-        counties = list(
-            pd.read_csv(
-                os.path.dirname(__file__) + "/../../../bootstrap_data/locations.csv"
-            )
-            .query(f"state == 55 and location != 55")["name"]
-            .replace(
-                {
-                    "La Crosse": "La crosse",
-                    "Green Lake": "Green lake",
-                    "Fond du Lac": "Fond du lac",
-                    "St. Croix": "St croix",
-                    "Eau Claire": "Eau claire",
-                }
-            )
-        )
+        replace = {
+            "La Crosse": "La crosse",
+            "Green Lake": "Green lake",
+            "Fond du Lac": "Fond du lac",
+            "St. Croix": "St croix",
+            "Eau Claire": "Eau claire",
+        }
+        counties = self._retrieve_counties(replace=replace)
 
         # get worksheets and set filter type
         # returns initiated values by default -- specify if the filter needs to be changed to completed

@@ -308,11 +308,7 @@ class MinnesotaCountyAgeVaccines(MinnesotaCountyVaccines):
         # Build post headers
         headers = self.construct_headers(resource_key)
 
-        counties = list(
-            pd.read_csv(
-                os.path.dirname(__file__) + "/../../../bootstrap_data/locations.csv"
-            ).query("state == @self.state_fips and name != 'Minnesota'")["name"]
-        )
+        counties = self._retrieve_counties()
 
         jsons = []
         """

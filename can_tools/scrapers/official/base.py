@@ -2,6 +2,7 @@ import json
 import logging
 import re
 import urllib.parse
+import os
 import uuid
 from abc import ABC, abstractmethod
 from base64 import b64decode
@@ -263,6 +264,29 @@ class StateDashboard(DatasetBase, ABC):
             data["location"] = pd.to_numeric(data["location"])
 
         return data
+
+    def _retrieve_counties(
+        self,
+        as_series: Optional[bool] = False,
+        replace: Optional[Dict[str, str]] = None,
+    ):
+        """Get a list of all counties in current state"""
+        """
+        as_series: 
+            Returns counties as a list by default. If True, returns counties as a pd.Series
+        replace: 
+            Dictionary of county names to replace, formatted as {old_name: new_name}
+        """
+        path = os.path.dirname(__file__) + "/../../bootstrap_data/locations.csv"
+        counties = pd.read_csv(path).query(
+            f"state == {self.state_fips} and location != {self.state_fips}"
+        )["name"]
+        if replace is not None:
+            counties = counties.replace(replace)
+        if not as_series:
+            return list(counties)
+        else:
+            return counties.reset_index(drop=True)
 
 
 class CountyDashboard(StateDashboard, ABC):
@@ -759,6 +783,7 @@ class TableauDashboard(StateDashboard, ABC):
             data=form_data,
             headers={"Accept": "text/javascript"},
         )
+        print(resp)
         # Parse the response.
         # The response contains multiple chuncks of the form
         # `<size>;<json>` where `<size>` is the number of bytes in `<json>`

@@ -347,12 +347,7 @@ class MaineRaceVaccines(MicrosoftBIDashboard):
         # Build post headers
         headers = self.construct_headers(resource_key)
 
-        counties = list(
-            pd.read_csv(
-                os.path.dirname(__file__) + "/../../../bootstrap_data/locations.csv"
-            ).query("state == @self.state_fips and name != 'Maine'")["name"]
-        )
-
+        counties = self._retrieve_counties()
         jsons = []
         """
         make one call per county to ensure that all the data is received

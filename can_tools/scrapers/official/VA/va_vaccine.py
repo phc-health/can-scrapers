@@ -110,11 +110,7 @@ class VirginiaCountyVaccineDemographics(VirginiaVaccine):
             return list(tqdm(pool.imap(func, i), total=len(i)))
 
     def fetch(self):
-        counties = list(
-            pd.read_csv(
-                os.path.dirname(__file__) + "/../../../bootstrap_data/locations.csv"
-            ).query(f"state == {self.state_fips} and name != 'Virginia'")["name"]
-        )
+        counties = self._retrieve_counties()
         # Set up multithreading
         n_processors = 6
         args = []
