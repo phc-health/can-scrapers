@@ -13,7 +13,8 @@ from prefect.tasks.secrets import EnvVarSecret
 from prefect.tasks.prefect.flow_run import StartFlowRun
 from can_tools.scrapers.official.base import ETagCacheMixin
 from services.prefect.flows.utils import (
-    etag_caching_terminal_state_handler, skip_if_running_handler
+    etag_caching_terminal_state_handler,
+    skip_if_running_handler,
 )
 
 
@@ -79,10 +80,11 @@ def initialize_sentry(sentry_dsn: str):
 @task
 def skip_cached_flow():
     # Set the task state to skipped.
-    # The flow's terminal state handler(etag_caching_terminal_state_handler)
-    # will see etag_skip_flag and will in turn set the final state of the flow to skipped.
+    # The flow's terminal state handler (etag_caching_terminal_state_handler)
+    # will see etag_skip_flag in the signal's context
+    # and will in turn set the final state of the flow to skipped.
     message = "No new source data. Skipping..."
-    skip_signal = signals.SKIP(dict(message=message, etag_skip_flag=True))
+    skip_signal = signals.SKIP(message=message, context=dict(etag_skip_flag=True))
     raise skip_signal
 
 
@@ -99,9 +101,10 @@ def create_flow_for_scraper(ix: int, cls: Type[DatasetBase], schedule=True):
         sched = CronSchedule(f"{ix % 60} */4 * * *")
 
     with Flow(
-        cls.__name__, sched, 
+        cls.__name__,
+        sched,
         state_handlers=[skip_if_running_handler],
-        terminal_state_handler=etag_caching_terminal_state_handler
+        terminal_state_handler=etag_caching_terminal_state_handler,
     ) as flow:
 
         # check if scraper has etag checking
