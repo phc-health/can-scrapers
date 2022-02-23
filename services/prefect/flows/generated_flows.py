@@ -92,6 +92,15 @@ def check_if_new_data_for_flow(cls):
         return cls().check_if_new_data()
     return True  # if class does not have etag checking always execute the scraper
 
+@task 
+def update_etag_if_exists(cls):
+    logger = prefect.context.get("logger")
+    if issubclass(cls, ETagCacheMixin):
+        cls.update_etag_version()
+        logger.info(f"Etag cache updated for class {cls.__name__}.")
+    else:
+        logger.info(f"Caching not used for class {cls.__name__}.")
+    return True
 
 def create_flow_for_scraper(ix: int, cls: Type[DatasetBase], schedule=True):
     sched = None
@@ -117,12 +126,14 @@ def create_flow_for_scraper(ix: int, cls: Type[DatasetBase], schedule=True):
             fetched = fetch(d)
             normalized = normalize(d)
             validated = validate(d)
-            done = put(d, connstr)
+            inserted = put(d, connstr)
+            done = update_etag_if_exists(d)
 
             d.set_upstream(sentry_sdk_task)
             normalized.set_upstream(fetched)
             validated.set_upstream(normalized)
-            done.set_upstream(validated)
+            inserted.set_upstream(validated)
+            done.set_upstream(inserted)
 
         with case(new_data, False):
             skip_cached_flow()

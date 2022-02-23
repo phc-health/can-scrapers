@@ -1253,12 +1253,9 @@ class ETagCacheMixin:
         """
         cached_etag = self._read_etag_version()
 
-        # if etag has not changed then do nothing.
+        # if the etag has not changed, return false, otherwise return true.
         if cached_etag == self.etag:
             return False
-
-        # update etag and return true
-        self._write_etag_version()
         return True
 
     def _read_etag_version(self):
@@ -1268,7 +1265,7 @@ class ETagCacheMixin:
                 return vf.readline().rstrip("\n")
         return None
 
-    def _write_etag_version(self) -> None:
+    def update_etag_version(self) -> None:
         stamp = datetime.datetime.utcnow().isoformat()
         version_path = self.cache_dir / self.cache_file
         with version_path.open("w+") as vf:
