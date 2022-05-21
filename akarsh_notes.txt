@@ -1,0 +1,35 @@
+#ssh into the box which is tied with SA
+#create github key
+git clone git@github.com:phc-health/can-scrapers.git
+cd can-scrapers
+
+#setup postgres with user 'scraper' and database name as 'scraper'.
+# https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart
+
+sudo apt install -y postgresql postgresql-contrib
+sudo systemctl start postgresql.service
+
+#create postgres user
+sudo -i -u postgres
+createuser --interactive
+
+#user scraper created
+
+#creat database for user
+
+createdb scraper
+exit
+
+#create user on the OS
+sudo adduser scraper
+
+# back to prefect agent setup
+# update prefect-agent.service & prefect-server.service
+# Added postgres connection to agent service file
+
+# updated setup_gcp_instance.sh to personal paths and gcs bucket.
+bash services/prefect/setup_gcp_instance.sh
+
+#restart machine to take effect all changes
+sudo reboot
+

@@ -1,4 +1,6 @@
 # set up docker
+set -x
+
 sudo apt-get update
 
 sudo apt-get install -y \
@@ -24,7 +26,7 @@ sudo add-apt-repository \
 sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 sudo usermod -aG docker $USER
-sudo su - $USER  # hack to activate docker group for current user
+#sudo su - $USER  # hack to activate docker group for current user
 
 # set up docker compose
 sudo curl -L "https://github.com/docker/compose/releases/download/1.28.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -45,10 +47,11 @@ source ~/.bashrc
 conda update -y conda
 conda install -y -c conda-forge mamba
 conda init bash
-sudo su - $USER  # hack to apply conda settings
+source ~/.bashrc
+#sudo su - $USER  # hack to apply conda settings
 
 # set up conda env
-mamba create -n prefect-can-scrapers python=3.7
+mamba create -n prefect-can-scrapers -y python=3.7
 conda activate prefect-can-scrapers
 
 # install python deps
@@ -65,15 +68,17 @@ curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install -y gcsfuse
 sudo usermod -a -G fuse $USER
-sudo su - $USER  # hack to enable gcsfuse
+#sudo su - $USER  # hack to enable gcsfuse
 
 # setup
 mkdir ~/scraper-outputs
-echo "can-scrape-outputs /home/sglyon/scraper-outputs gcsfuse rw,noauto,user" | sudo tee -a /etc/fstab > /dev/null
+cd ~/scraper-outputs
+echo "can-scraper-data-test $(pwd) gcsfuse rw,noauto,user" | sudo tee -a /etc/fstab > /dev/null
 mount ~/scraper-outputs
 
 # add environment variable for the scraper-outputs
-echo "export DATAPATH=/home/sglyon/scraper-outputs" | tee -a ~/.bashrc > /dev/nul
+cd ~/scraper-outputs
+echo "export DATAPATH=$(pwd)" | tee -a ~/.bashrc > /dev/null
 
 # setup nginx for reverse proxy
 sudo apt-get install -y nginx

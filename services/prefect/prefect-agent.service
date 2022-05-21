@@ -2,12 +2,13 @@
 Description=prefect agents
 
 [Service]
-Environment="DATAPATH=/home/sglyon/scraper-outputs"
-User=sglyon
-Group=sglyon
+Environment="DATAPATH=/home/akarsh/scraper-outputs"
+Environment="COVID_DB_CONN_URI=postgresql://scraper:scraper@127.0.0.1:5432/scraper"
+User=akarsh
+Group=akarsh
 Type=simple
-WorkingDirectory=/home/sglyon/can-scrapers
-ExecStart=/home/sglyon/miniconda/envs/prefect-can-scrapers/bin/prefect agent local start --api https://can-prefect.valorumdata.com/graphql
+WorkingDirectory=/home/akarsh/can-scrapers
+ExecStart=/home/akarsh/miniconda/envs/prefect-can-scrapers/bin/prefect agent local start --api https://can-prefect.valorumdata.com/graphql
 Restart=always
 RestartSec=5s
 After=prefect-server.service
