@@ -1,0 +1,10 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', '${_BASE_REPO}/${_IMAGE_PATH}', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', '${_BASE_REPO}/${_IMAGE_PATH}']
+images: ['${_BASE_REPO}/${_IMAGE_PATH}']
+
+substitutions:
+  _BASE_REPO: us-docker.pkg.dev/project-pluto-324014/docker
+  _IMAGE_PATH: prefect/can-agent
